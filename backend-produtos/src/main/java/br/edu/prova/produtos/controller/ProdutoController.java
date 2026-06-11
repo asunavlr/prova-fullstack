@@ -33,7 +33,11 @@ public class ProdutoController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<Produto> buscarPorId(@PathVariable Long id) {
-        return ResponseEntity.status(501).build();
+        return produtos.stream()
+                .filter(p -> p.getId().equals(id))
+                .findFirst()
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     /*
@@ -44,7 +48,10 @@ public class ProdutoController {
      */
     @PostMapping
     public ResponseEntity<Produto> cadastrar(@RequestBody Produto produto) {
-        return ResponseEntity.status(501).build();
+        produto.setId(proximoId);
+        proximoId++;
+        produtos.add(produto);
+        return ResponseEntity.status(201).body(produto);
     }
 
     /*
@@ -54,7 +61,17 @@ public class ProdutoController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<Produto> atualizar(@PathVariable Long id, @RequestBody Produto produtoAtualizado) {
-        return ResponseEntity.status(501).build();
+        for (Produto p : produtos) {
+            if (p.getId().equals(id)) {
+                p.setNome(produtoAtualizado.getNome());
+                p.setDescricao(produtoAtualizado.getDescricao());
+                p.setPreco(produtoAtualizado.getPreco());
+                p.setCategoria(produtoAtualizado.getCategoria());
+                p.setImagemUrl(produtoAtualizado.getImagemUrl());
+                return ResponseEntity.ok(p);
+            }
+        }
+        return ResponseEntity.notFound().build();
     }
 
     /*
@@ -64,6 +81,10 @@ public class ProdutoController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> remover(@PathVariable Long id) {
-        return ResponseEntity.status(501).build();
+        boolean removido = produtos.removeIf(p -> p.getId().equals(id));
+        if (removido) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 }

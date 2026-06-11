@@ -49,7 +49,30 @@ function App() {
    */
   async function cadastrarProduto(evento) {
     evento.preventDefault();
-    setMensagem("Cadastro ainda não implementado.");
+
+    if (produto.id) {
+      await atualizarProduto();
+      return;
+    }
+
+    try {
+      const resposta = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(produto)
+      });
+
+      if (!resposta.ok) {
+        setMensagem("Erro ao cadastrar produto.");
+        return;
+      }
+
+      await carregarProdutos();
+      setProduto(produtoInicial);
+      setMensagem("Produto cadastrado com sucesso.");
+    } catch (erro) {
+      setMensagem("Erro ao cadastrar produto.");
+    }
   }
 
   /*
@@ -59,7 +82,27 @@ function App() {
    * - Se não encontrar, exibir mensagem de erro.
    */
   async function buscarProdutoPorId() {
-    setMensagem("Busca por ID ainda não implementada.");
+    if (!idBusca) {
+      setMensagem("Informe um ID para buscar.");
+      return;
+    }
+
+    try {
+      const resposta = await fetch(`${API_URL}/${idBusca}`);
+
+      if (!resposta.ok) {
+        setProdutoEncontrado(null);
+        setMensagem("Produto não encontrado.");
+        return;
+      }
+
+      const dados = await resposta.json();
+      setProdutoEncontrado(dados);
+      setMensagem("");
+    } catch (erro) {
+      setProdutoEncontrado(null);
+      setMensagem("Erro ao buscar produto.");
+    }
   }
 
   /*
@@ -68,7 +111,8 @@ function App() {
    * - O formulário deve permitir atualizar o produto posteriormente.
    */
   function prepararEdicao(produtoSelecionado) {
-    setMensagem("Edição ainda não implementada.");
+    setProduto(produtoSelecionado);
+    setMensagem("Editando produto: " + produtoSelecionado.nome);
   }
 
   /*
@@ -78,7 +122,29 @@ function App() {
    * - Limpar o formulário.
    */
   async function atualizarProduto() {
-    setMensagem("Atualização ainda não implementada.");
+    if (!produto.id) {
+      setMensagem("Selecione um produto para editar antes de atualizar.");
+      return;
+    }
+
+    try {
+      const resposta = await fetch(`${API_URL}/${produto.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(produto)
+      });
+
+      if (!resposta.ok) {
+        setMensagem("Erro ao atualizar produto.");
+        return;
+      }
+
+      await carregarProdutos();
+      setProduto(produtoInicial);
+      setMensagem("Produto atualizado com sucesso.");
+    } catch (erro) {
+      setMensagem("Erro ao atualizar produto.");
+    }
   }
 
   /*
@@ -87,7 +153,21 @@ function App() {
    * - Recarregar a lista após excluir.
    */
   async function excluirProduto(id) {
-    setMensagem("Exclusão ainda não implementada.");
+    try {
+      const resposta = await fetch(`${API_URL}/${id}`, {
+        method: "DELETE"
+      });
+
+      if (!resposta.ok) {
+        setMensagem("Erro ao excluir produto.");
+        return;
+      }
+
+      await carregarProdutos();
+      setMensagem("Produto excluído com sucesso.");
+    } catch (erro) {
+      setMensagem("Erro ao excluir produto.");
+    }
   }
 
   function limparFormulario() {
