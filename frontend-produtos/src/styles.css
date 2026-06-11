@@ -1,0 +1,10 @@
+.app-background {
+  min-height: 100vh;
+  background-color: #f4f6f8;
+  padding-bottom: 40px;
+}
+
+.product-image {
+  height: 180px;
+  object-fit: cover;
+}
