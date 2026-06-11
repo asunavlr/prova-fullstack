@@ -25,7 +25,7 @@ Este projeto já contém:
 - CORS configurado (direcionador de links).
 - Lista de produtos em memória.
 - Front-end React em estrutura compatível com `npx create-react-app`.
-- Tela inicial com listagem de produtos via API.
+- Tela inicial com listagem de produtos via API java springboot.
 
 ## Execução
 
